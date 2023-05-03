@@ -5,6 +5,7 @@ import (
 	_ "embed"
 	"fmt"
 	"os"
+	"path"
 
 	"golang.org/x/exp/slices"
 )
@@ -80,7 +81,7 @@ func main() {
 
 	if os.Args[1] == "local" {
 		if len(os.Args) == 2 {
-			localVersion, ok := getLocalVersion()
+			localVersion, ok, _ := getLocalVersion()
 			if !ok {
 				fmt.Println("local version is not set")
 				return
@@ -118,7 +119,7 @@ func main() {
 		return
 	}
 
-	currentVersion, isGlobal, isOk := getVersion()
+	currentVersion, isGlobal, isOk, path := getVersion()
 	if !isOk {
 		fmt.Println("Error: No version specified")
 		fmt.Println("Please try specifiying a version with 'xienv global <version>' or 'xienv local <version>'")
@@ -136,7 +137,7 @@ func main() {
 				if isGlobal {
 					fmt.Println("* " + version + " (global)")
 				} else {
-					fmt.Println("* " + version + " (local)")
+					fmt.Println("* " + version + " (local at " + path + ")")
 				}
 			} else {
 				fmt.Println("  " + version)
@@ -190,17 +191,17 @@ func getInstalledVersions() []string {
 	return versions
 }
 
-// return version, isGlobal, isOk
-func getVersion() (string, bool, bool) {
-	localVersion, ok := getLocalVersion()
+// return version, isGlobal, isOk, localPath
+func getVersion() (string, bool, bool, string) {
+	localVersion, ok, path := getLocalVersion()
 	if !ok {
 		globalVersion, ok := getGlobalVersion()
 		if !ok {
-			return "", false, false
+			return "", false, false, ""
 		}
-		return globalVersion, true, true
+		return globalVersion, true, true, ""
 	}
-	return localVersion, false, true
+	return localVersion, false, true, path
 
 }
 
@@ -227,15 +228,30 @@ func setGlobalVersion(ver string) {
 	f.WriteString(ver)
 }
 
-func getLocalVersion() (string, bool) {
-	// TODO: find parent directory with .xilinx_version
-	f, err := os.OpenFile(".xilinx_version", os.O_RDONLY, 0666)
+func getLocalVersionAt(dir string) (string, bool, string) {
+	f, err := os.OpenFile(dir+"/.xilinx_version", os.O_RDONLY, 0666)
 	if err != nil {
-		return "", false
+		if dir == "/" {
+			return "", false, ""
+		}
+		parent := path.Dir(dir)
+		version, ok, path := getLocalVersionAt(parent)
+		return version, ok, path
 	}
 	reader := bufio.NewReaderSize(f, 4096)
 	line, _, err := reader.ReadLine()
-	return string(line), true
+	return string(line), true, dir
+}
+
+// return version, isOk, path
+func getLocalVersion() (string, bool, string) {
+	path, err := os.Getwd()
+	if err != nil {
+		panic(err)
+	}
+	version, ok, path := getLocalVersionAt(path)
+	return version, ok, path
+	// TODO: find parent directory with .xilinx_version
 }
 
 func setLocalVersion(ver string) {
