@@ -22,7 +22,7 @@ eval "$(xienv init -)"
 
 ```sh
 xienv global 2020.2 # set global version
-xienv local 2020.2  # set project-local version
+xienv local 2020.2  # set project-local version (written to .xienv-version)
 xienv versions      # list installed versions
 
 # run Vivado/Vitis with global/local version
