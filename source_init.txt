@@ -1,0 +1,6 @@
+please add line below to your .zshrc
+
+# init xienv
+eval "$(xienv init -)"
+
+after updating .zshrc, please restart your shell
