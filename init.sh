@@ -30,10 +30,10 @@ _xienv_cmp() {
         (args)
             case $words[1] in
                 (global)
-                    _values 'mode' $(xienv versions --short)
+                    _values 'versions' $(xienv versions --short)
                     ;;
                 (local)
-                    _values 'mode' $(xienv versions --short)
+                    _values 'versions' $(xienv versions --short)
                     ;;
             esac
             ;;
