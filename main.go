@@ -119,17 +119,7 @@ func main() {
 		return
 	}
 
-	currentVersion, isGlobal, isOk, path := getVersion()
-	if !isOk {
-		fmt.Println("Error: No version specified")
-		fmt.Println("Please try specifiying a version with 'xienv global <version>' or 'xienv local <version>'")
-		fmt.Println("Available versions are:")
-		for _, version := range installedVersions {
-			fmt.Println("  " + version)
-		}
-		os.Exit(1)
-
-	}
+	currentVersion, isGlobal, isVersionSet, path := getVersion()
 
 	if os.Args[1] == "versions" {
 		for _, version := range installedVersions {
@@ -146,7 +136,38 @@ func main() {
 		return
 	}
 
+	if os.Args[1] == "version" && os.Args[2] == "--no-error" {
+		if isVersionSet {
+			fmt.Print(currentVersion)
+		}
+		return
+	}
+
+	if os.Args[1] == "version" {
+		if !isVersionSet {
+			fmt.Println("Error: No version specified")
+			fmt.Println("Please try specifiying a version with 'xienv global <version>' or 'xienv local <version>'")
+			fmt.Println("Available versions are:")
+			for _, version := range installedVersions {
+				fmt.Println("  " + version)
+			}
+			os.Exit(1)
+
+		}
+		fmt.Print(currentVersion)
+		return
+	}
+
 	if os.Args[1] == "check" {
+		if !isVersionSet {
+			fmt.Println("Error: No version specified")
+			fmt.Println("Please try specifiying a version with 'xienv global <version>' or 'xienv local <version>'")
+			fmt.Println("Available versions are:")
+			for _, version := range installedVersions {
+				fmt.Println("  " + version)
+			}
+			os.Exit(1)
+		}
 		if !slices.Contains(installedVersions, currentVersion) {
 			if isGlobal {
 				fmt.Println("Error: Global version " + currentVersion + " not installed")
@@ -166,11 +187,6 @@ func main() {
 			os.Exit(1)
 		}
 		os.Exit(0)
-	}
-
-	if os.Args[1] == "version" {
-		fmt.Print(currentVersion)
-		return
 	}
 
 	printUsage()
