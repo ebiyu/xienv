@@ -122,6 +122,12 @@ func main() {
 	currentVersion, isGlobal, isVersionSet, path := getVersion()
 
 	if os.Args[1] == "versions" {
+		if len(os.Args) > 2 && os.Args[2] == "--short" {
+			for _, version := range installedVersions {
+				fmt.Println(version)
+			}
+			return
+		}
 		for _, version := range installedVersions {
 			if version == currentVersion {
 				if isGlobal {
