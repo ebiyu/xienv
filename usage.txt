@@ -1,0 +1,10 @@
+Usage: xienv <command> [<args>]
+
+Some useful xienv commands are:
+   init        Configure the shell environment for pyenv
+   global      Set or show the global Python version(s)
+   local       Set or show the local application-specific Python version(s)
+   version     Show the current Python version(s) and its origin
+   versions    List all Python versions available to pyenv
+
+For full documentation, see: https://github.com/ebiyuu1121/xienv#readme

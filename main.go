@@ -15,8 +15,11 @@ var initSh []byte
 //go:embed source_init.txt
 var initIntroduction []byte
 
+//go:embed usage.txt
+var UsageText []byte
+
 func printUsage() {
-	fmt.Println("Usage")
+	fmt.Println(string(UsageText))
 }
 
 func main() {
@@ -37,6 +40,24 @@ func main() {
 	installedVersions := getInstalledVersions()
 
 	if os.Args[1] == "global" {
+		if len(os.Args) == 2 {
+			globalVersion, ok := getGlobalVersion()
+			if !ok {
+				fmt.Println("Global version is not set")
+				return
+			}
+			if slices.Contains(installedVersions, globalVersion) {
+				fmt.Println(globalVersion)
+				return
+			} else {
+				fmt.Println("Error: Global version " + globalVersion + " not installed")
+				fmt.Println("Please try specifiying a version with 'xienv global <version>'")
+				fmt.Println("Valid versions are:")
+				for _, version := range installedVersions {
+					fmt.Println("  " + version)
+				}
+			}
+		}
 		if len(os.Args) != 3 {
 			printUsage()
 			os.Exit(1)
@@ -58,6 +79,25 @@ func main() {
 	}
 
 	if os.Args[1] == "local" {
+		if len(os.Args) == 2 {
+			localVersion, ok := getLocalVersion()
+			if !ok {
+				fmt.Println("local version is not set")
+				return
+			}
+			if slices.Contains(installedVersions, localVersion) {
+				fmt.Println(localVersion)
+				return
+			} else {
+				fmt.Println("Error: local version " + localVersion + " not installed")
+				fmt.Println("Please try specifiying a version with 'xienv local <version>'")
+				fmt.Println("Valid versions are:")
+				for _, version := range installedVersions {
+					fmt.Println("  " + version)
+				}
+			}
+		}
+
 		if len(os.Args) != 3 {
 			printUsage()
 			os.Exit(1)
@@ -109,6 +149,11 @@ func main() {
 		if !slices.Contains(installedVersions, currentVersion) {
 			if isGlobal {
 				fmt.Println("Error: Global version " + currentVersion + " not installed")
+				fmt.Println("Please try specifiying a version with 'xienv global <version>'")
+				fmt.Println("Valid versions are:")
+				for _, version := range installedVersions {
+					fmt.Println("  " + version)
+				}
 			} else {
 				fmt.Println("Error: Local version " + currentVersion + " not installed")
 				fmt.Println("Please try specifiying a version with 'xienv local <version>'")
