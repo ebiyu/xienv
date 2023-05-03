@@ -234,10 +234,23 @@ func getGlobalVersion() (string, bool) {
 
 func setGlobalVersion(ver string) {
 	home, err := os.UserHomeDir()
+	if err != nil {
+		panic(err)
+	}
 
-	// TODO: check directory existance
+	_, err = os.Stat(home + "/.xienv")
+	if err != nil {
+		if os.IsNotExist(err) {
+			err := os.Mkdir(home+"/.xienv", 0775)
+			if err != nil {
+				panic(err)
+			}
+		} else {
+			panic(err)
+		}
+	}
 
-	f, err := os.OpenFile(home+"/.xienv/version", os.O_WRONLY, 0666)
+	f, err := os.OpenFile(home+"/.xienv/version", os.O_CREATE+os.O_WRONLY, 0664)
 	if err != nil {
 		panic(err)
 	}
@@ -245,7 +258,7 @@ func setGlobalVersion(ver string) {
 }
 
 func getLocalVersionAt(dir string) (string, bool, string) {
-	f, err := os.OpenFile(dir+"/.xilinx_version", os.O_RDONLY, 0666)
+	f, err := os.OpenFile(dir+"/.xilinx_version", os.O_RDONLY, 0664)
 	if err != nil {
 		if dir == "/" {
 			return "", false, ""
@@ -271,7 +284,7 @@ func getLocalVersion() (string, bool, string) {
 }
 
 func setLocalVersion(ver string) {
-	f, err := os.OpenFile(".xilinx_version", os.O_WRONLY, 0666)
+	f, err := os.OpenFile(".xilinx_version", os.O_WRONLY, 0664)
 	if err != nil {
 		panic(err)
 	}
