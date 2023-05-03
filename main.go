@@ -136,7 +136,7 @@ func main() {
 		return
 	}
 
-	if os.Args[1] == "version" && os.Args[2] == "--no-error" {
+	if os.Args[1] == "version" && len(os.Args) > 2 && os.Args[2] == "--no-error" {
 		if isVersionSet {
 			fmt.Print(currentVersion)
 		}
