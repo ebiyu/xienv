@@ -290,7 +290,7 @@ func getLocalVersion() (string, bool, string) {
 }
 
 func setLocalVersion(ver string) {
-	f, err := os.OpenFile(".xilinx_version", os.O_WRONLY, 0664)
+	f, err := os.OpenFile(".xilinx_version", os.O_CREATE+os.O_WRONLY, 0664)
 	if err != nil {
 		panic(err)
 	}
