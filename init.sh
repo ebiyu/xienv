@@ -1,12 +1,52 @@
-# Xilinx
-function xienv_run() {
-    xienv check && 
-    zsh -c ". /tools/Xilinx/Vivado/$(xienv version)/settings64.sh &&. /tools/Xilinx/Vitis/$(xienv version)/settings64.sh && $*"
-}
+# =============== start xienv init script ===============
 
-alias vivado="xienv_run vivado"
-alias vitis="xienv_run vitis"
-alias xsct="xienv_run xsct"
+mkdir -p $HOME/.xienv/bin
+
+# install shims script
+cat <<'EOF' > $HOME/.xienv/bin/xienv-run
+#!/bin/bash
+
+set -eu
+
+path_remove ()  { export PATH=`echo -n $PATH | awk -v RS=: -v ORS=: '$0 != "'$1'"' | sed 's/:$//'`; }
+path_remove "$HOME/.xienv/bin"
+
+xienv check
+. /tools/Xilinx/Vivado/$(xienv version)/settings64.sh
+
+command=$1
+shift 1
+$command "$@"
+EOF
+chmod +x $HOME/.xienv/bin/xienv-run
+
+
+# install shims script
+cat <<'EOF' > $HOME/.xienv/run
+#!/bin/bash
+
+set -eu
+
+path_remove ()  { export PATH=`echo -n $PATH | awk -v RS=: -v ORS=: '$0 != "'$1'"' | sed 's/:$//'`; }
+path_remove "$HOME/.xienv/bin"
+
+xienv check
+. /tools/Xilinx/Vivado/$(xienv version)/settings64.sh
+
+${0##*/} "$@"
+EOF
+chmod +x $HOME/.xienv/run
+
+ls $HOME/.xienv/bin/vivado > /dev/null 2>&1 || ln -s $HOME/.xienv/run $HOME/.xienv/bin/vivado
+ls $HOME/.xienv/bin/vitis > /dev/null 2>&1 || ln -s $HOME/.xienv/run $HOME/.xienv/bin/vitis
+ls $HOME/.xienv/bin/xsct > /dev/null 2>&1 || ln -s $HOME/.xienv/run $HOME/.xienv/bin/xsct
+
+#path_remove $HOME/.xienv/bin
+export PATH="$HOME/.xienv/bin:$PATH"
+
+#alias vivado="xienv_run vivado"
+#alias vitis="xienv_run vitis"
+#alias xsct="xienv_run xsct"
 
 # shell completion
 _xienv_cmd() {
@@ -41,3 +81,5 @@ _xienv_cmp() {
 }
 
 compdef _xienv_cmp xienv
+
+# =============== end xienv init script ===============
