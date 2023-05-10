@@ -33,5 +33,5 @@ vitis
 
 # If some commands are not found, please contact me.
 # Workaround:
-xienv_run vivado
+xienv-run vivado
 ```
