@@ -286,7 +286,6 @@ func getLocalVersion() (string, bool, string) {
 	}
 	version, ok, path := getLocalVersionAt(path)
 	return version, ok, path
-	// TODO: find parent directory with .xilinx_version
 }
 
 func setLocalVersion(ver string) {
