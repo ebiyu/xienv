@@ -119,7 +119,7 @@ func main() {
 		return
 	}
 
-	currentVersion, isGlobal, isVersionSet, path := getVersion()
+	currentVersion, versionSource, isVersionSet, path := getVersion()
 
 	if os.Args[1] == "versions" {
 		if len(os.Args) > 2 && os.Args[2] == "--short" {
@@ -130,7 +130,9 @@ func main() {
 		}
 		for _, version := range installedVersions {
 			if version == currentVersion {
-				if isGlobal {
+				if versionSource == "env" {
+					fmt.Println("* " + version + " (env)")
+				} else if versionSource == "global" {
 					fmt.Println("* " + version + " (global)")
 				} else {
 					fmt.Println("* " + version + " (local at " + path + ")")
@@ -175,7 +177,13 @@ func main() {
 			os.Exit(1)
 		}
 		if !slices.Contains(installedVersions, currentVersion) {
-			if isGlobal {
+			if versionSource == "env" {
+				fmt.Println("Error: Version from XIENV_VERSION " + currentVersion + " not installed")
+				fmt.Println("Valid versions are:")
+				for _, version := range installedVersions {
+					fmt.Println("  " + version)
+				}
+			} else if versionSource == "global" {
 				fmt.Println("Error: Global version " + currentVersion + " not installed")
 				fmt.Println("Please try specifiying a version with 'xienv global <version>'")
 				fmt.Println("Valid versions are:")
@@ -213,17 +221,22 @@ func getInstalledVersions() []string {
 	return versions
 }
 
-// return version, isGlobal, isOk, localPath
-func getVersion() (string, bool, bool, string) {
+// return version, versionSource, isOk, localPath
+func getVersion() (string, string, bool, string) {
+	envVersion := os.Getenv("XIENV_VERSION")
+	if envVersion != "" {
+		return envVersion, "env", true, ""
+	}
+	// NODENV_VERSION
 	localVersion, ok, path := getLocalVersion()
 	if !ok {
 		globalVersion, ok := getGlobalVersion()
 		if !ok {
-			return "", false, false, ""
+			return "", "", false, ""
 		}
-		return globalVersion, true, true, ""
+		return globalVersion, "global", true, ""
 	}
-	return localVersion, false, true, path
+	return localVersion, "local", true, path
 
 }
 
