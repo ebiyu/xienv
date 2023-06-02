@@ -37,9 +37,15 @@ ${0##*/} "$@"
 EOF
 chmod +x $HOME/.xienv/run
 
-ls $HOME/.xienv/bin/vivado > /dev/null 2>&1 || ln -s $HOME/.xienv/run $HOME/.xienv/bin/vivado
-ls $HOME/.xienv/bin/vitis > /dev/null 2>&1 || ln -s $HOME/.xienv/run $HOME/.xienv/bin/vitis
-ls $HOME/.xienv/bin/xsct > /dev/null 2>&1 || ln -s $HOME/.xienv/run $HOME/.xienv/bin/xsct
+for app in \
+vivado \
+vitis \
+xsct \
+bootgen \
+dtc
+do
+ls $HOME/.xienv/bin/$app > /dev/null 2>&1 || ln -s $HOME/.xienv/run $HOME/.xienv/bin/$app
+done
 
 #path_remove $HOME/.xienv/bin
 export PATH="$HOME/.xienv/bin:$PATH"
