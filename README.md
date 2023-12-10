@@ -9,7 +9,7 @@ Vivado/Vitis must be installed in `/tools/Xilinx/Vivado` and `/tools/Xilinx/Viti
 Please install via `go install`:
 
 ```sh
-go install github.com/ebiyuu1121/xienv@latest
+go install github.com/ebiyu/xienv@latest
 ```
 
 and open your `.zshrc`, `.bashrc`, or `.bash_profile` and add the following line:

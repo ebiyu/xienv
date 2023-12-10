@@ -1,4 +1,4 @@
-module github.com/ebiyuu1121/xienv
+module github.com/ebiyu/xienv
 
 go 1.20
 

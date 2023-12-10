@@ -7,4 +7,4 @@ Some useful xienv commands are:
    version     Show the current Vivado/Vitis version(s) and its origin
    versions    List all Vivado/Vitis versions available to xienv
 
-For full documentation, see: https://github.com/ebiyuu1121/xienv#readme
+For full documentation, see: https://github.com/ebiyu/xienv#readme
